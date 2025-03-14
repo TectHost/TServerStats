@@ -1,0 +1,12 @@
+name: TServerStats
+version: 1.0.0
+main: tect.host.TServerStats
+
+author: Mine_Alex | Tect.host
+api-version: '1.13'
+website: tect.host
+
+commands:
+  tserverstats:
+    aliases:
+      - tstats

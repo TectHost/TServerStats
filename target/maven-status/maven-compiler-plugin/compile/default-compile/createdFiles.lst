@@ -1,0 +1,12 @@
+utils\TranslateHexColorCodes.class
+managers\HtmlManager.class
+tect\host\TServerStats.class
+utils\WebServer.class
+utils\ConfigFile.class
+utils\WebServer$FileHandler.class
+commands\Commands.class
+utils\WebServer$ConsoleHandler.class
+managers\ConfigManager.class
+utils\TranslateColors.class
+managers\MessagesManager.class
+utils\WebServer$StatsHandler.class

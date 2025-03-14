@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stats - TServerStats | Made by Tect.host</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-primary: #f0f2f5;
+            --bg-secondary: #ffffff;
+            --text-primary: #2e3440;
+            --text-secondary: #4c566a;
+            --accent: #5e81ac;
+            --accent-hover: #81a1c1;
+            --success: #a3be8c;
+            --danger: #bf616a;
+            --warning: #ebcb8b;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --border-color: rgba(236, 239, 244, 0.5);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --glass: rgba(255, 255, 255, 0.25);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #2e3440;
+            --bg-secondary: #3b4252;
+            --text-primary: #eceff4;
+            --text-secondary: #e5e9f0;
+            --accent: #88c0d0;
+            --accent-hover: #8fbcbb;
+            --card-bg: rgba(59, 66, 82, 0.95);
+            --border-color: rgba(76, 86, 106, 0.5);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --glass: rgba(46, 52, 64, 0.25);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--accent);
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            background-image:
+                radial-gradient(circle at 20% 20%, var(--accent) 0%, transparent 25%),
+                radial-gradient(circle at 80% 80%, var(--success) 0%, transparent 25%);
+            background-attachment: fixed;
+        }
+
+        nav {
+            background: var(--glass);
+            backdrop-filter: blur(8px);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        .logo > *:not(:last-child) {
+            gap: 80rem;
+        }
+
+        .mobile-menu {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .theme-toggle {
+            background: var(--accent);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            color: var(--bg-primary);
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: transform 0.2s;
+        }
+
+        .theme-toggle:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .stat-icon {
+            background: var(--accent);
+            color: var(--bg-primary);
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .stat-info h3 {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .player-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .player-list {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .player-list .section-title {
+            grid-column: 1 / -1;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .player {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 0.5rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .player:hover {
+            transform: scale(1.02);
+        }
+
+        .player-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            margin-right: 1rem;
+        }
+
+        .player-info {
+            flex-grow: 1;
+        }
+
+        .player-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .player-rank {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .player-section {
+                grid-template-columns: 1fr;
+            }
+
+            .player-list {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .nav-links.active {
+                display: flex;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: var(--glass);
+                backdrop-filter: blur(8px);
+                padding: 1rem;
+                border-bottom: 1px solid var(--border-color);
+            }
+        }
+
+        .tps-graph-section {
+            margin-top: 2rem;
+        }
+
+        .tps-graph-section .stat-card {
+            height: auto;
+            padding-bottom: 1rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        #tpsChart {
+            width: 100% !important;
+            height: 100% !important;
+        }
+    </style>
+</head>
+<body>
+<nav>
+    <div class="nav-container">
+        <div class="logo">
+            <i class="fas fa-cube"></i>
+            TServerStats - Stats
+        </div>
+        <div class="nav-links">
+            <a href="/"><i class="fas fa-home"></i> Home</a>
+            <a href="/stats"><i class="fas fa-code"></i> Stats</a>
+            <a href="/console"><i class="fas fa-terminal"></i> Console</a>
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon"></i>
+                Toggle Theme
+            </button>
+        </div>
+        <div class="mobile-menu">
+            <i class="fas fa-bars"></i>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Online Players</h3>
+                    <div class="stat-value">%server_online%/%server_max_players%</div>
+                </div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <i class="fas fa-server"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>TPS</h3>
+                    <div class="stat-value">%server_tps_1%</div>
+                </div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <i class="fas fa-memory"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Memory</h3>
+                    <div class="stat-value">%math_1:down_{server_ram_used} / 1024% / %math_1:down_{server_ram_total} / 1024% GB</div>
+                </div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Uptime</h3>
+                    <div class="stat-value">%server_uptime%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="player-section">
+        <div class="player-list">
+            <h2 class="section-title">
+                <i class="fas fa-user-group"></i>
+                Online Players
+            </h2>
+            %player_list%
+        </div>
+    </div>
+
+    <div class="tps-graph-section">
+        <div class="stat-card">
+            <h2 class="section-title">
+                <i class="fas fa-chart-line"></i>
+                TPS
+            </h2>
+            <div class="chart-container">
+                <canvas id="tpsChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var ctx = document.getElementById('tpsChart').getContext('2d');
+    var tpsChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['15m', '5m', '1m'],
+            datasets: [{
+                label: 'TPS',
+                data: ['%server_tps_15%', '%server_tps_5%', '%server_tps_1%'],
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    min: 0,
+                    max: 20,
+                    title: {
+                        display: true,
+                        text: 'TPS'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Time (s)'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            animation: {
+                duration: 0
+            }
+        }
+    });
+
+    function updateTPSChart(newData) {
+        tpsChart.data.datasets[0].data = newData;
+        tpsChart.update();
+    }
+
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+    const icon = themeToggle.querySelector('i');
+
+    themeToggle.addEventListener('click', () => {
+        if (body.getAttribute('data-theme') === 'dark') {
+            body.removeAttribute('data-theme');
+            icon.classList.remove('fa-sun');
+            icon.classList.add('fa-moon');
+        } else {
+            body.setAttribute('data-theme', 'dark');
+            icon.classList.remove('fa-moon');
+            icon.classList.add('fa-sun');
+        }
+    });
+</script>
+</body>
+</html>
+

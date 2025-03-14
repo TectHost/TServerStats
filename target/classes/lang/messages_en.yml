@@ -1,0 +1,13 @@
+# #################################################################
+# ┌─────────────────────────────────────────────────────────────┐ #
+# │                       English messages                      │ #
+# │                   Translated by: Tect.host                  │ #
+# └─────────────────────────────────────────────────────────────┘ #
+# #################################################################
+
+messages:
+  unknown: "<red>Unknown command.</red> Use <gold><click:run_command:'/tss'><hover:show_text:'<gray>Click to run the command</gray>'><green>/tss</green></hover></click> to see the available commands."
+  noPerm: "<red>You do not have sufficient permissions.</red>"
+  openViewer: "<green>Statistics page opened in the browser.</green>"
+  reload: "<green>Configuration successfully reloaded.</green>"
+  version: "<green>Version: </green><yellow>%version%</yellow>"

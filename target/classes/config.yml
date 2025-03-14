@@ -1,0 +1,52 @@
+# #################################################################
+# ┌─────────────────────────────────────────────────────────────┐ #
+# │                        General config                       │ #
+# └─────────────────────────────────────────────────────────────┘ #
+# #################################################################
+
+# The language file to use from the lang folder
+lang-file: "messages_en.yml"
+
+general:
+  # Enable/disable stats page
+  stats-page: true
+  # Enable/disable console page
+  console-page: false
+  # Don't add more pages here, this is just to control the default pages!
+
+# #################################################################
+# ┌─────────────────────────────────────────────────────────────┐ #
+# │                      Web server config                      │ #
+# └─────────────────────────────────────────────────────────────┘ #
+# #################################################################
+
+web:
+  # The full link to the page, this link will be used to open the page when running /tss viewer (replaces the data with the real data).
+  # 'http://' -> Don't touch!
+  # 'localhost' -> Server IP
+  # ':' -> Don't touch!
+  # '8080' -> Additional port of the server (don't use 25565 or 19132, these are Minecraft ports)
+  # '/' -> Default route
+  link: "http://localhost:8080/"
+  # The web port (modify this with your additional server port)
+  port: 8080
+  # General files (all files except stats and console)
+  general:
+    # The index file name (must start with ‘/’)
+    index-file: "/index.html"
+  stats:
+    # The route to access to the page (must start with '/'), default: http://localhost:8080/stats
+    route: "/stats"
+    # The stats file name (must start with '/')
+    stats-file: "/stats.html"
+  console:
+    # The route to access to the page (must start with '/'), default: http://localhost:8080/console
+    route: "/console"
+    # The console file name (must start with '/')
+    console-file: "/console.html"
+
+players:
+  # Prefix placeholder for the player list in the stats html file
+  prefix-placeholder: "%luckperms_prefix%"
+  # Hours played placeholder for the player list in the stats html file
+  hours-placeholder: "%statistic_hours_played%"

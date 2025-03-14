@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TServerStats | Made by Tect.host</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg-primary: #f0f2f5;
+            --bg-secondary: #ffffff;
+            --text-primary: #2e3440;
+            --text-secondary: #4c566a;
+            --accent: #5e81ac;
+            --accent-hover: #81a1c1;
+            --success: #a3be8c;
+            --danger: #bf616a;
+            --warning: #ebcb8b;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --border-color: rgba(236, 239, 244, 0.5);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --glass: rgba(255, 255, 255, 0.25);
+            --terminal-bg: #2e3440;
+            --terminal-text: #eceff4;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #2e3440;
+            --bg-secondary: #3b4252;
+            --text-primary: #eceff4;
+            --text-secondary: #e5e9f0;
+            --accent: #88c0d0;
+            --accent-hover: #8fbcbb;
+            --card-bg: rgba(59, 66, 82, 0.95);
+            --border-color: rgba(76, 86, 106, 0.5);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --glass: rgba(46, 52, 64, 0.25);
+            --terminal-bg: #1d2229;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            background-image:
+                radial-gradient(circle at 20% 20%, var(--accent) 0%, transparent 25%),
+                radial-gradient(circle at 80% 80%, var(--success) 0%, transparent 25%);
+            background-attachment: fixed;
+        }
+
+        nav {
+            background: var(--glass);
+            backdrop-filter: blur(8px);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        .theme-toggle {
+            background: var(--accent);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            color: var(--bg-primary);
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .theme-toggle:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .welcome-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .welcome-card h1 {
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .terminal-card {
+            background: var(--terminal-bg);
+            border-radius: 16px;
+            padding: 1rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background: #ff5f56; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #27c93f; }
+
+        .terminal-content {
+            font-family: 'Courier New', monospace;
+            color: var(--terminal-text);
+            height: 300px;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .command-line {
+            display: flex;
+            margin-bottom: 0.5rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .prompt {
+            color: var(--accent);
+            margin-right: 1rem;
+        }
+
+        .command {
+            color: var(--terminal-text);
+        }
+
+        .response {
+            color: var(--text-secondary);
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .action-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .action-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .action-card h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .mobile-menu {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .nav-links.active {
+                display: flex;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: var(--glass);
+                backdrop-filter: blur(8px);
+                padding: 1rem;
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<nav>
+    <div class="nav-container">
+        <div class="logo">
+            <i class="fas fa-terminal"></i>
+            TServerStats - Index
+        </div>
+        <div class="nav-links">
+            <a href="/"><i class="fas fa-home"></i> Inicio</a>
+            <a href="/stats"><i class="fas fa-chart-bar"></i> Stats</a>
+            <a href="/console"><i class="fas fa-terminal"></i> Console</a>
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon"></i>
+                Toggle Theme
+            </button>
+        </div>
+        <div class="mobile-menu">
+            <i class="fas fa-bars"></i>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="welcome-card">
+        <h1>Welcome to TServerStats!</h1>
+        <p>The plugin has been successfully installed. Here is a quick guide to the most useful commands.</p>
+    </div>
+
+    <div class="terminal-card">
+        <div class="terminal-header">
+            <div class="terminal-dot dot-red"></div>
+            <div class="terminal-dot dot-yellow"></div>
+            <div class="terminal-dot dot-green"></div>
+        </div>
+        <div class="terminal-content" id="terminal">
+            <!-- The commands will be added via JavaScript -->
+        </div>
+    </div>
+
+    <div class="quick-actions">
+        <div class="action-card">
+            <h3><i class="fas fa-chart-line"></i> See Statistics</h3>
+            <p>Access your server's real-time statistics dashboard.</p>
+        </div>
+        <div class="action-card">
+            <h3><i class="fas fa-users"></i> Manage Players</h3>
+            <p>Manage permissions and view player statistics.</p>
+        </div>
+        <div class="action-card">
+            <h3><i class="fas fa-cog"></i> Configuration</h3>
+            <p>Customise the plugin according to your needs.</p>
+        </div>
+        <div class="action-card">
+            <h3><i class="fas fa-book"></i> Documentation</h3>
+            <p>Access the complete guide to the plugin.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    const themeToggle = document.getElementById('themeToggle');
+    const mobileMenu = document.querySelector('.mobile-menu');
+    const navLinks = document.querySelector('.nav-links');
+    const body = document.body;
+    const icon = themeToggle.querySelector('i');
+    const terminal = document.getElementById('terminal');
+
+    const commands = [
+        {
+            command: 'tss viewer',
+            response: 'Open this website'
+        },
+        {
+            command: 'tss reload',
+            response: 'Reload plugin configuration (not necessary for HTML files)'
+        },
+        {
+            command: 'tss version',
+            response: 'View the plugin version'
+        }
+    ];
+
+    function addCommand(command, response, delay) {
+        setTimeout(() => {
+            const commandDiv = document.createElement('div');
+            commandDiv.className = 'command-line';
+            commandDiv.innerHTML = `
+                <span class="prompt">></span>
+                <span class="command">${command}</span>
+            `;
+            terminal.appendChild(commandDiv);
+
+            if (response) {
+                setTimeout(() => {
+                    const responseDiv = document.createElement('div');
+                    responseDiv.className = 'command-line';
+                    responseDiv.innerHTML = `
+                        <span class="response">${response}</span>
+                    `;
+                    terminal.appendChild(responseDiv);
+                    terminal.scrollTop = terminal.scrollHeight;
+                }, 500);
+            }
+
+            terminal.scrollTop = terminal.scrollHeight;
+        }, delay);
+    }
+
+    let delay = 0;
+    commands.forEach(cmd => {
+        addCommand(cmd.command, cmd.response, delay);
+        delay += 2000;
+    });
+
+    themeToggle.addEventListener('click', () => {
+        if (body.getAttribute('data-theme') === 'dark') {
+            body.removeAttribute('data-theme');
+            icon.classList.remove('fa-sun');
+            icon.classList.add('fa-moon');
+        } else {
+            body.setAttribute('data-theme', 'dark');
+            icon.classList.remove('fa-moon');
+            icon.classList.add('fa-sun');
+        }
+    });
+
+    mobileMenu.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+    });
+</script>
+</body>
+</html>
